@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ExpoLens" />
+  <title>ExpoLens Mobile — Fuarda Ziyaretçi Analitiği</title>
+  <style>
+:root{
+  --bg:#070b14;--surface:#0d1322;--surface2:#121a2d;--line:#26314a;--text:#f3f6ff;--muted:#9aa8c4;
+  --accent:#73a7ff;--accent2:#93c5fd;--good:#65d6a3;--warn:#ffc66d;--danger:#ff8080;
+  --r:20px;--shadow:0 18px 55px rgba(0,0,0,.25)
+}
+*{box-sizing:border-box} html{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{margin:0;background:radial-gradient(circle at 100% -10%,#132856 0,transparent 34%),var(--bg);min-height:100vh}
+.topbar{position:sticky;top:0;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:rgba(7,11,20,.86);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
+h1{margin:1px 0 0;font-size:24px;letter-spacing:-.6px}.eyebrow{font-size:10px;letter-spacing:1.5px;color:var(--muted);font-weight:700}
+main{max-width:760px;margin:0 auto;padding:16px 14px calc(40px + env(safe-area-inset-bottom))}.card{background:linear-gradient(180deg,rgba(18,26,45,.98),rgba(12,18,31,.98));border:1px solid rgba(255,255,255,.07);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}.hero h2,.card h3{margin:0 0 8px;letter-spacing:-.4px}.hero p,.card p{color:var(--muted);line-height:1.45}.micro{font-size:12px}.note{font-size:13px;padding:11px 12px;border-radius:14px;background:rgba(115,167,255,.08);border:1px solid rgba(115,167,255,.18)}
+.badge{font-size:11px;font-weight:750;padding:7px 9px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}.badge.neutral{color:var(--muted);background:#101827}.badge.success{color:var(--good);background:rgba(101,214,163,.08);border-color:rgba(101,214,163,.28)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:2px 0 14px}.step{border:0;background:transparent;color:#73809a;font-size:11px;padding:8px 2px}.step span{display:flex;width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;margin:0 auto 5px;background:#141d31;border:1px solid var(--line);font-weight:750}.step.active{color:var(--text)}.step.active span{background:var(--accent);color:#07101f;border-color:transparent}.step.done span{background:rgba(101,214,163,.18);color:var(--good);border-color:rgba(101,214,163,.35)}
+.panel{display:none}.panel.active{display:block}.button{appearance:none;border:0;border-radius:14px;padding:13px 15px;font-size:15px;font-weight:700;text-decoration:none;display:inline-flex;justify-content:center;align-items:center;gap:7px;min-height:46px;cursor:pointer}.button.primary{background:var(--accent);color:#081120}.button.secondary{background:#17233a;color:var(--text);border:1px solid #2a3a59}.button.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}.button:disabled{opacity:.38}.full{width:100%}.button-row,.hero-actions{display:flex;gap:8px;flex-wrap:wrap}.button-row .button{flex:1}
+.upload{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 14px;border-radius:17px;border:1.5px dashed #385076;background:rgba(115,167,255,.055);cursor:pointer}.upload input{display:none}.upload span{color:var(--muted);font-size:12px;margin-top:4px}
+video{display:none;width:100%;margin-top:14px;border-radius:16px;background:#000;max-height:52vh}.meta-row{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:8px}.meta-row span{padding:5px 8px;background:#111a2a;border-radius:8px}.hidden{display:none!important}.field-row{display:flex;align-items:end;gap:10px;margin:14px 0}.field{display:flex;flex-direction:column;gap:7px}.field span{font-size:12px;color:var(--muted);font-weight:650}.field input,.field select{background:#0a101d;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px;font-size:16px;min-height:44px}.field input[type=range]{padding:0}.grow{flex:1}.section-title{display:flex;justify-content:space-between;align-items:start;gap:10px}.section-title p{margin:2px 0 0}
+.canvas-wrap{position:relative;margin:14px 0;border-radius:16px;overflow:hidden;background:#05070b;border:1px solid var(--line);touch-action:none}#zoneCanvas{display:block;width:100%;height:auto;touch-action:none}.canvas-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center;color:var(--muted);background:#0b101c}.chips{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 16px}.chip{background:#121d31;border:1px solid #2c3f61;color:var(--accent2);border-radius:999px;padding:7px 10px;font-size:12px}.chip button{border:0;background:transparent;color:var(--danger);margin-left:5px;font-weight:800}
+.settings-grid{display:grid;grid-template-columns:1fr;gap:11px;margin:15px 0}.status-box{background:#090f1a;border:1px solid var(--line);border-radius:15px;padding:12px;margin:13px 0}.status-head{display:flex;justify-content:space-between;font-size:13px;font-weight:700}progress{appearance:none;width:100%;height:8px;margin:9px 0;border:0;border-radius:999px;overflow:hidden;background:#182033}progress::-webkit-progress-bar{background:#182033}progress::-webkit-progress-value{background:var(--accent)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:15px 0}.kpi{background:#0a111e;border:1px solid var(--line);border-radius:15px;padding:13px}.kpi span{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}.kpi strong{font-size:22px;letter-spacing:-.5px}.results{display:flex;flex-direction:column;gap:8px;margin:10px 0 15px}.result-row{display:grid;grid-template-columns:1.5fr .75fr .75fr;gap:7px;align-items:center;background:#0b121f;border:1px solid var(--line);border-radius:13px;padding:11px}.result-row strong{font-size:13px}.result-row span{font-size:12px;color:var(--muted);text-align:right}.card-inset{margin-top:15px;padding:13px;border-radius:14px;background:#0a111e;border:1px solid var(--line)}.card-inset h4{margin:0 0 6px}.card-inset p{font-size:13px;margin:0}.card-inset code{color:var(--accent2)}
+@media(min-width:620px){.settings-grid{grid-template-columns:repeat(3,1fr)}.kpis{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:520px){.stack-mobile{align-items:stretch;flex-direction:column}.stack-mobile .button{width:100%}.hero-actions .button{width:100%}.step{font-size:10px}.card{padding:15px;border-radius:18px}.section-title{align-items:center}}
+
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">CLOUDFLARE POC · v0.5</div>
+      <h1>ExpoLens</h1>
+    </div>
+    <span id="modelBadge" class="badge neutral">AI bekliyor</span>
+  </header>
+
+  <main>
+    <section class="hero card">
+      <h2>Videoyu telefonda veriye çevir</h2>
+      <p>Video seç → sabit kareyi kilitle → ürün alanlarını dokunarak işaretle → kişi takibini çalıştır → zone/dwell verisini indir.</p>
+      <div class="hero-actions">
+        <a class="button secondary" href="https://www.pexels.com/video/aerial-view-of-people-walking-in-decorated-hall-36164228/" target="_blank" rel="noreferrer">Kuş bakışı test videosunu aç</a>
+      </div>
+      <p class="micro">Test videosu Pexels üzerinde ücretsiz kullanıma sunuluyor ve iç mekânda kuş bakışı insan hareketi içeriyor. Videoyu iPhone’a indirip aşağıdan seç. Bu POC’de kişi tespiti, tracking, alan geçişi ve dwell akışını doğruluyoruz.</p>
+    </section>
+
+    <nav class="steps" aria-label="İş akışı">
+      <button class="step active" data-step="1"><span>1</span> Video</button>
+      <button class="step" data-step="2"><span>2</span> Alanlar</button>
+      <button class="step" data-step="3"><span>3</span> Analiz</button>
+      <button class="step" data-step="4"><span>4</span> Sonuç</button>
+    </nav>
+
+    <section id="panel1" class="panel active">
+      <div class="card">
+        <h3>1. Video seç</h3>
+        <label class="upload">
+          <input id="videoInput" type="file" accept="video/*" />
+          <strong>iPhone’dan video seç</strong>
+          <span>720p / 1080p kısa MP4 test için ideal</span>
+        </label>
+        <video id="video" controls playsinline preload="metadata"></video>
+        <div id="videoMeta" class="meta-row hidden"></div>
+        <div class="field-row">
+          <label class="field grow">
+            <span>Referans saniyesi</span>
+            <input id="frameTime" type="range" min="0" max="1" value="0" step="0.1" />
+          </label>
+          <output id="frameTimeLabel">0.0 sn</output>
+        </div>
+        <button id="captureFrame" class="button primary" disabled>Bu kareyi kilitle</button>
+        <p class="note">Kamera açısı sabit kalacaksa ürün alanlarını yalnızca bir kez işaretlemek yeterli. Ana X3 uygulamasında aynı geometri tüm kayıt boyunca kullanılacak.</p>
+      </div>
+    </section>
+
+    <section id="panel2" class="panel">
+      <div class="card">
+        <div class="section-title">
+          <div>
+            <h3>2. Ürün alanlarını fotoğraf üzerinde işaretle</h3>
+            <p>Alan adını yaz. Fotoğrafta köşelere sırayla dokun. En az 3 nokta seç.</p>
+          </div>
+          <span id="lockBadge" class="badge success">Açı kilitli</span>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="zoneCanvas" width="720" height="405"></canvas>
+          <div id="canvasEmpty" class="canvas-empty">Önce videodan referans kare oluştur.</div>
+        </div>
+        <div class="field-row stack-mobile">
+          <label class="field grow">
+            <span>Alan adı</span>
+            <input id="zoneName" type="text" placeholder="Örn. Yeni Koleksiyon" />
+          </label>
+          <button id="undoPoint" class="button ghost">Son noktayı geri al</button>
+        </div>
+        <div class="button-row">
+          <button id="saveZone" class="button primary">Alanı kaydet</button>
+          <button id="clearDraft" class="button ghost">Çizimi temizle</button>
+        </div>
+        <div id="zoneList" class="chips"></div>
+        <button class="button secondary full" data-goto="3">Analize geç</button>
+      </div>
+    </section>
+
+    <section id="panel3" class="panel">
+      <div class="card">
+        <h3>3. Telefonda AI analizi</h3>
+        <p>Bu prototip TensorFlow.js + COCO-SSD kullanarak yalnızca <strong>person</strong> sınıfını arar. Takip için hafif bir mobil tracker kullanılır. Kuş bakışı modda kişinin bounding-box merkez noktası alan eşleştirmesinde kullanılır.</p>
+        <div class="settings-grid">
+          <label class="field">
+            <span>Örnekleme</span>
+            <select id="sampleFps">
+              <option value="1">1 kare/sn — önerilen</option>
+              <option value="2">2 kare/sn</option>
+              <option value="0.5">0.5 kare/sn — hızlı</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Test süresi</span>
+            <select id="maxDuration">
+              <option value="20">İlk 20 sn</option>
+              <option value="30" selected>İlk 30 sn</option>
+              <option value="60">İlk 60 sn</option>
+              <option value="999999">Tüm video</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Kişi güven eşiği</span>
+            <select id="confidence">
+              <option value="0.45">%45</option>
+              <option value="0.55" selected>%55</option>
+              <option value="0.65">%65</option>
+            </select>
+          </label>
+        </div>
+        <div class="status-box">
+          <div class="status-head"><span id="analysisStatus">Hazır</span><span id="analysisPct">0%</span></div>
+          <progress id="progress" max="100" value="0"></progress>
+          <p id="statusDetail" class="micro">Model ilk çalıştırmada internetten yüklenir. Video görüntüsü cihazdan dışarı gönderilmez.</p>
+        </div>
+        <button id="runAnalysis" class="button primary full">Analizi başlat</button>
+        <button id="stopAnalysis" class="button ghost full hidden">Durdur</button>
+        <p class="note">iPhone testinde kuş bakışı video, düşük çözünürlük ve 1 fps kullanıyoruz. Üretim sürümünde native iOS/Core ML ile çok daha hızlı çalıştırabiliriz.</p>
+      </div>
+    </section>
+
+    <section id="panel4" class="panel">
+      <div class="card">
+        <div class="section-title">
+          <div>
+            <h3>4. Sonuçlar</h3>
+            <p>Bu prototip benzersiz ziyaretçi sayısını yaklaşık track sayısı olarak verir.</p>
+          </div>
+          <span class="badge neutral">TEST</span>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><span>Track</span><strong id="kpiTracks">—</strong></div>
+          <div class="kpi"><span>Zone olayı</span><strong id="kpiEvents">—</strong></div>
+          <div class="kpi"><span>Ort. dwell</span><strong id="kpiDwell">—</strong></div>
+          <div class="kpi"><span>En güçlü alan</span><strong id="kpiTopZone">—</strong></div>
+        </div>
+        <div id="zoneResults" class="results"></div>
+        <div class="button-row">
+          <button id="downloadCsv" class="button secondary">CSV indir</button>
+          <button id="resetApp" class="button ghost">Yeni test</button>
+        </div>
+        <div class="review card-inset">
+          <h4>Staff filtresi — ana sürüm</h4>
+          <p>İnternet test videosunda sizin özel çalışan kombininiz olmadığı için bu prototipte staff filtresi manuel inceleme olarak bırakıldı. X3 testinde referans kombin fotoğraflarını ekleyip track bazında <code>STAFF / VISITOR / UNKNOWN</code> sınıflandırmasına geçeceğiz.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <canvas id="workCanvas" width="640" height="360" hidden></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+  <script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const state = {
+  videoFile: null, frameImage: null, frameTime: 0, zones: [], draft: [], model: null,
+  stop: false, tracks: [], events: [], frameW: 640, frameH: 360, nextTrackId: 1
+};
+
+const video = $('#video');
+const frameTime = $('#frameTime');
+const zoneCanvas = $('#zoneCanvas');
+const zctx = zoneCanvas.getContext('2d');
+const workCanvas = $('#workCanvas');
+const wctx = workCanvas.getContext('2d', {willReadFrequently:true});
+
+function gotoStep(n){
+  $$('.panel').forEach((p,i)=>p.classList.toggle('active', i===n-1));
+  $$('.step').forEach((s,i)=>{
+    s.classList.toggle('active', i===n-1);
+    s.classList.toggle('done', i<n-1);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+$$('.step').forEach(b=>b.addEventListener('click',()=>gotoStep(Number(b.dataset.step))));
+$$('[data-goto]').forEach(b=>b.addEventListener('click',()=>gotoStep(Number(b.dataset.goto))));
+
+$('#videoInput').addEventListener('change', e=>{
+  const f = e.target.files?.[0]; if(!f) return;
+  state.videoFile = f;
+  video.src = URL.createObjectURL(f);
+  video.style.display='block';
+  video.onloadedmetadata = ()=>{
+    frameTime.max = video.duration || 1;
+    frameTime.value = Math.min(1, video.duration/4);
+    $('#captureFrame').disabled = false;
+    $('#videoMeta').classList.remove('hidden');
+    $('#videoMeta').innerHTML = `<span>${(f.size/1024/1024).toFixed(1)} MB</span><span>${formatTime(video.duration)}</span><span>${video.videoWidth}×${video.videoHeight}</span>`;
+    $('#frameTimeLabel').textContent = `${Number(frameTime.value).toFixed(1)} sn`;
+  };
+});
+frameTime.addEventListener('input', async ()=>{
+  $('#frameTimeLabel').textContent = `${Number(frameTime.value).toFixed(1)} sn`;
+  if(video.readyState>=1){ video.currentTime=Number(frameTime.value); }
+});
+
+function waitSeek(el, t){
+  return new Promise(resolve=>{
+    const done=()=>{el.removeEventListener('seeked',done);resolve();};
+    el.addEventListener('seeked',done,{once:true});
+    el.currentTime = Math.min(Math.max(t,0), Math.max(0,(el.duration||t)-0.01));
+    if(Math.abs(el.currentTime-t)<0.02 && el.readyState>=2){setTimeout(done,30)}
+  });
+}
+
+$('#captureFrame').addEventListener('click', async ()=>{
+  if(!state.videoFile) return;
+  state.frameTime=Number(frameTime.value);
+  await waitSeek(video,state.frameTime);
+  const ratio=video.videoWidth/video.videoHeight;
+  zoneCanvas.width=720; zoneCanvas.height=Math.round(720/ratio);
+  zctx.drawImage(video,0,0,zoneCanvas.width,zoneCanvas.height);
+  state.frameImage=zoneCanvas.toDataURL('image/jpeg',0.86);
+  state.zones=[]; state.draft=[];
+  $('#canvasEmpty').classList.add('hidden');
+  redrawZones(); renderZoneList();
+  gotoStep(2);
+});
+
+function canvasPoint(evt){
+  const r=zoneCanvas.getBoundingClientRect();
+  const touch=evt.touches?.[0] || evt.changedTouches?.[0];
+  const x=( (touch?touch.clientX:evt.clientX) - r.left ) * zoneCanvas.width/r.width;
+  const y=( (touch?touch.clientY:evt.clientY) - r.top ) * zoneCanvas.height/r.height;
+  return [x,y];
+}
+zoneCanvas.addEventListener('pointerdown', e=>{
+  if(!state.frameImage) return;
+  state.draft.push(canvasPoint(e)); redrawZones();
+});
+$('#undoPoint').addEventListener('click',()=>{state.draft.pop();redrawZones();});
+$('#clearDraft').addEventListener('click',()=>{state.draft=[];redrawZones();});
+$('#saveZone').addEventListener('click',()=>{
+  const name=$('#zoneName').value.trim();
+  if(!name){alert('Alan adını yaz.');return}
+  if(state.draft.length<3){alert('En az 3 köşe işaretle.');return}
+  state.zones.push({id:`Z${state.zones.length+1}`,name,points:[...state.draft]});
+  state.draft=[]; $('#zoneName').value=''; redrawZones();renderZoneList();
+});
+function renderZoneList(){
+  const el=$('#zoneList'); el.innerHTML='';
+  state.zones.forEach((z,i)=>{
+    const c=document.createElement('span');c.className='chip';c.innerHTML=`${escapeHtml(z.name)} <button aria-label="Sil">×</button>`;
+    c.querySelector('button').onclick=()=>{state.zones.splice(i,1);redrawZones();renderZoneList();};
+    el.appendChild(c);
+  });
+}
+function redrawZones(){
+  if(!state.frameImage) return;
+  const img=new Image(); img.onload=()=>{
+    zctx.clearRect(0,0,zoneCanvas.width,zoneCanvas.height);zctx.drawImage(img,0,0,zoneCanvas.width,zoneCanvas.height);
+    state.zones.forEach((z,i)=>drawPoly(z.points,`rgba(115,167,255,.24)`,`#73a7ff`,z.name));
+    if(state.draft.length) drawPoly(state.draft,'rgba(255,198,109,.18)','#ffc66d','Yeni alan',false);
+  };img.src=state.frameImage;
+}
+function drawPoly(pts,fill,stroke,label,close=true){
+  if(!pts.length)return;zctx.beginPath();zctx.moveTo(...pts[0]);for(const p of pts.slice(1))zctx.lineTo(...p);if(close)zctx.closePath();zctx.fillStyle=fill;zctx.fill();zctx.strokeStyle=stroke;zctx.lineWidth=3;zctx.stroke();
+  pts.forEach(p=>{zctx.beginPath();zctx.arc(p[0],p[1],6,0,Math.PI*2);zctx.fillStyle=stroke;zctx.fill()});
+  zctx.font='700 18px -apple-system';zctx.fillStyle='#fff';zctx.fillText(label,pts[0][0]+8,Math.max(22,pts[0][1]-8));
+}
+
+async function ensureModel(){
+  if(state.model) return state.model;
+  $('#modelBadge').textContent='AI yükleniyor';
+  try{ await tf.ready(); state.model=await cocoSsd.load({base:'lite_mobilenet_v2'}); $('#modelBadge').textContent='AI hazır';$('#modelBadge').className='badge success';return state.model; }
+  catch(err){$('#modelBadge').textContent='AI hatası';throw err}
+}
+
+$('#runAnalysis').addEventListener('click', runAnalysis);
+$('#stopAnalysis').addEventListener('click',()=>{state.stop=true;});
+async function runAnalysis(){
+  if(!state.videoFile){alert('Önce video seç.');gotoStep(1);return}
+  if(!state.zones.length){alert('En az bir ürün alanı işaretle.');gotoStep(2);return}
+  try{await ensureModel()}catch(e){alert('AI modeli yüklenemedi. İnternet bağlantısını kontrol et.');return}
+  state.stop=false;state.tracks=[];state.events=[];state.nextTrackId=1;
+  $('#runAnalysis').classList.add('hidden');$('#stopAnalysis').classList.remove('hidden');
+  const fps=Number($('#sampleFps').value);const step=1/fps;const maxDur=Math.min(video.duration,Number($('#maxDuration').value));
+  const conf=Number($('#confidence').value);
+  const scale=Math.min(1,640/video.videoWidth);state.frameW=Math.round(video.videoWidth*scale);state.frameH=Math.round(video.videoHeight*scale);workCanvas.width=state.frameW;workCanvas.height=state.frameH;
+  const total=Math.max(1,Math.ceil(maxDur/step));let idx=0;
+  for(let t=0;t<maxDur;t+=step){
+    if(state.stop)break;idx++;
+    setStatus(`Kare ${idx}/${total}`,idx/total,`${t.toFixed(1)} sn · telefonda person detection`);
+    await waitSeek(video,t);wctx.drawImage(video,0,0,state.frameW,state.frameH);
+    const preds=await state.model.detect(workCanvas,30,conf);
+    const people=preds.filter(p=>p.class==='person').map(p=>({bbox:p.bbox,score:p.score,center:[p.bbox[0]+p.bbox[2]/2,p.bbox[1]+p.bbox[3]/2],foot:[p.bbox[0]+p.bbox[2]/2,p.bbox[1]+p.bbox[3]]}));
+    updateTracks(people,t,step);
+    await nextPaint();
+  }
+  closeOpenZoneEvents(Math.min(maxDur,video.currentTime||maxDur));
+  $('#stopAnalysis').classList.add('hidden');$('#runAnalysis').classList.remove('hidden');
+  setStatus(state.stop?'Durduruldu':'Tamamlandı',1,`${state.tracks.length} track · ${state.events.length} zone olayı`);
+  renderResults();gotoStep(4);
+}
+
+function updateTracks(dets,t,step){
+  const maxDist=Math.max(55,state.frameW*0.12);
+  const active=state.tracks.filter(tr=>t-tr.lastTime<=Math.max(2.2,step*2.4));
+  const pairs=[];active.forEach(tr=>dets.forEach((d,di)=>pairs.push({tr,d,di,dist:distance(tr.center,d.center)})));pairs.sort((a,b)=>a.dist-b.dist);
+  const usedT=new Set(),usedD=new Set();
+  for(const p of pairs){if(p.dist>maxDist||usedT.has(p.tr.id)||usedD.has(p.di))continue;assignDet(p.tr,p.d,t);usedT.add(p.tr.id);usedD.add(p.di)}
+  dets.forEach((d,di)=>{if(usedD.has(di))return;const tr={id:state.nextTrackId++,center:d.center,bbox:d.bbox,lastTime:t,firstTime:t,zone:null,zoneEnter:null,totalSeen:1};state.tracks.push(tr);assignZone(tr,d.center,t);});
+}
+function assignDet(tr,d,t){tr.center=d.center;tr.bbox=d.bbox;tr.lastTime=t;tr.totalSeen++;assignZone(tr,d.center,t)}
+function assignZone(tr,foot,t){
+  const zx=foot[0]/state.frameW*zoneCanvas.width, zy=foot[1]/state.frameH*zoneCanvas.height;
+  const z=state.zones.find(z=>pointInPoly([zx,zy],z.points)) || null; const zid=z?.id||null;
+  if(tr.zone===zid)return;
+  if(tr.zone){const old=state.zones.find(x=>x.id===tr.zone);state.events.push({track_id:tr.id,zone:old?.name||tr.zone,enter:tr.zoneEnter,exit:t,dwell:Math.max(0,t-tr.zoneEnter)});}
+  tr.zone=zid;tr.zoneEnter=zid?t:null;
+}
+function closeOpenZoneEvents(t){state.tracks.forEach(tr=>{if(tr.zone&&tr.zoneEnter!=null){const z=state.zones.find(x=>x.id===tr.zone);state.events.push({track_id:tr.id,zone:z?.name||tr.zone,enter:tr.zoneEnter,exit:t,dwell:Math.max(0,t-tr.zoneEnter)});tr.zone=null;tr.zoneEnter=null;}})}
+function renderResults(){
+  const valid=state.events.filter(e=>e.dwell>=0.5);const by={};valid.forEach(e=>{by[e.zone]??={visits:0,dwell:0,tracks:new Set()};by[e.zone].visits++;by[e.zone].dwell+=e.dwell;by[e.zone].tracks.add(e.track_id)});
+  const avg=valid.length?valid.reduce((s,e)=>s+e.dwell,0)/valid.length:0;const ranked=Object.entries(by).sort((a,b)=>b[1].dwell-a[1].dwell);
+  $('#kpiTracks').textContent=state.tracks.length;$('#kpiEvents').textContent=valid.length;$('#kpiDwell').textContent=`${avg.toFixed(1)} sn`;$('#kpiTopZone').textContent=ranked[0]?.[0]||'—';
+  const r=$('#zoneResults');r.innerHTML='';ranked.forEach(([name,x])=>{const div=document.createElement('div');div.className='result-row';div.innerHTML=`<strong>${escapeHtml(name)}</strong><span>${x.tracks.size} track</span><span>${(x.dwell/x.visits).toFixed(1)} sn</span>`;r.appendChild(div)});
+}
+
+$('#downloadCsv').addEventListener('click',()=>{
+  const rows=[['track_id','zone','enter_s','exit_s','dwell_s'],...state.events.map(e=>[e.track_id,e.zone,e.enter.toFixed(2),e.exit.toFixed(2),e.dwell.toFixed(2)])];
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='expolens_events.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+});
+$('#resetApp').addEventListener('click',()=>location.reload());
+
+function setStatus(label,pct,detail){$('#analysisStatus').textContent=label;$('#analysisPct').textContent=`${Math.round(pct*100)}%`;$('#progress').value=pct*100;$('#statusDetail').textContent=detail}
+function distance(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1])}
+function pointInPoly(p,vs){let inside=false;for(let i=0,j=vs.length-1;i<vs.length;j=i++){const xi=vs[i][0],yi=vs[i][1],xj=vs[j][0],yj=vs[j][1];const inter=((yi>p[1])!=(yj>p[1]))&&(p[0]<(xj-xi)*(p[1]-yi)/(yj-yi+1e-9)+xi);if(inter)inside=!inside}return inside}
+function formatTime(s){if(!Number.isFinite(s))return'—';const m=Math.floor(s/60),ss=Math.floor(s%60);return `${m}:${String(ss).padStart(2,'0')}`}
+function nextPaint(){return new Promise(r=>requestAnimationFrame(()=>r()))}
+function escapeHtml(s){return s.replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+  </script>
+</body>
+</html>
